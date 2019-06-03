@@ -1,0 +1,27 @@
+function outliers = separate_outliers(numbers,lnnc_matrix,lnnc_dismatrix)
+% separate outlier from outlier-LNNCs
+% Input:
+%   numbers: no. of outlier-LNNCs
+%   lnnc_matrix : LNNC matrix
+%   lnnc_dismatrix: inner distance matrix of LNNCs
+% Output:
+%   outliers:  detection results
+
+% initial outliers
+outliers = [];
+% outlier-LNNCs
+outlier_lnnc_matrix = lnnc_matrix(numbers,:);
+% inner distance matrix
+inner_distancematrix = lnnc_dismatrix(numbers,:);
+% locations of dmax of each row
+[~,locs] = max(inner_distancematrix,[],2);
+% cutting positions
+outlier_locs = (locs * 2) -1;
+
+% separate outliers for each outlier-LNNC
+for i = 1:numel(numbers)
+    rowoutliers = outlier_lnnc_matrix(i,1:outlier_locs(i));
+    outliers = [outliers,rowoutliers];
+end
+outliers = unique(outliers);
+end
