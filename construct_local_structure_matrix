@@ -1,0 +1,84 @@
+function [lnnc_matrix,lnnc_matrix_dis] = construct_local_structure_matrix(data,kn,nd,ni)
+% construct lnncs
+% Input: 
+%   data : data matrix without labels
+%   kn: neighborhood size epsilon
+%   nd: distance matrix of data
+%   ni:  indices matrix of data
+%   Output:
+%   lnnc_matrix: lnnc matrix
+%   lnnc_matrix_dis: inner distance matrix of lnnc
+
+%%initial
+[r,~] = size(data);
+lnnc_matrix = [];
+lnnc_matrix_dis = [];
+
+%starting point
+dsnumbers = 1: r(1);
+
+while ~isempty(dsnumbers)
+
+    %current starting point
+    start_point = dsnumbers(1);
+    % a LNNC of a data point
+    [k_mst,k_mst_dis] = construct_k_mst(start_point,kn,nd,ni);
+    % add the LNNC
+    lnnc_matrix = [lnnc_matrix;k_mst];
+    lnnc_matrix_dis = [lnnc_matrix_dis;k_mst_dis];
+    %remove the  data points that have been constructed
+    dsnumbers = setdiff(dsnumbers,k_mst);
+  
+end
+% inner function: construct a LNNC
+function [a_k_mst,a_k_mst_dis] = construct_k_mst(start_point,k,nd,ni)
+    
+    %initial
+    a_k_mst = [];  % a LNNC
+    a_k_mst_dis = zeros(1,k-1); % distance vector
+    a_k_mst(1) = start_point ; % the starting point
+    %querry the nearest neighbors
+    start_point_next = ni(2,start_point); 
+    a_k_mst(2) = start_point_next;
+    a_k_mst_dis(1) = nd(1,start_point); 
+    
+    % set the distacnes between the data point have been existing as inf
+    for i = 1 : k-2
+        % nodes set of existing points
+        formed_points = unique(a_k_mst);
+        % their distance matrix
+        k_distance_matrix = nd(:,formed_points);
+        %their indices
+        k_index_matrix = ni(:,formed_points);
+        
+        %set the distance between existing data point as inf
+        k_index_matrix_true = k_index_matrix(2:end,:); % remove the first index
+        locs = ismember(k_index_matrix_true,formed_points); % locations of existing points
+        [locs_r,locs_c] = find(locs == 1); % rows and cols
+
+        % set distances between existing points as inf
+        for m = 1:numel(locs_r)
+            k_distance_matrix(locs_r(m),locs_c(m)) = inf; 
+        end
+        % querry the nearest neighbors
+        min_value = min(min(k_distance_matrix)); 
+        [row,col] = find(k_distance_matrix == min_value);
+        
+        if length(row) > 1
+            row = row(1);
+            col = col(1);
+        end
+        %construct a edge
+        cur_point = formed_points(col);
+        next_point = k_index_matrix_true(row ,col); 
+        
+        %add new edge
+        a_k_mst(2 .* i + 1) = cur_point;
+        a_k_mst(2 .* i + 2) = next_point;
+        
+        % the ith edge
+        a_k_mst_dis(i+1) = k_distance_matrix(row,col);
+               
+    end
+end
+end
