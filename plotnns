@@ -1,0 +1,17 @@
+function plotnns(data,nns)
+% figure of LNNCs 
+%   Input:
+%   data : data point
+%   nns: LNNCs
+
+[r,c] = size(nns);
+for i = 1:r
+
+    for j = 1:2:c 
+        cur = [data(nns(i,j),1),data(nns(i,j+1),1)];  
+        next = [data(nns(i,j),2),data(nns(i,j+1),2)]; 
+        plot(cur,next,'k-');
+        hold on
+    end
+end
+end
