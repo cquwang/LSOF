@@ -6,6 +6,7 @@ function [lsof_vector,outliers,auc] = lsof(ds,epsilon)
 %   Output:
 %   lsof_vector: outlier factor of each local structure
 %   outliers: detection result
+%   auc: AUC value
 
 %%initializing data
 data = ds(:,1:end-1); % attributes
