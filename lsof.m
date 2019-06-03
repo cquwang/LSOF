@@ -57,6 +57,8 @@ outliers = separate_outliers(outlier_lnnc_numbers,local_structure_matrix,local_s
 figure
 scatter(data(:,1),data(:,2),40,'.');
 hold on;
+xlabel('x');
+ylabel('y');
 scatter(data(outliers,1),data(outliers,2),'r*');
 hold off
 
