@@ -1,0 +1,20 @@
+function lsof_vector = compute_lsof(inner_relative_distancematrix)
+% compute lsof
+%%parameters
+% imput:
+% inner_relative_distancematrix: inner distance matrix
+% output:
+%lsof_vector: lsof values
+
+%% initial
+[r,c] = size(inner_relative_distancematrix);
+lsof_vector = zeros(r,1);
+
+%% process
+for i = 1:r
+    alpha = max(inner_relative_distancematrix(i,:));
+    beta = (sum(inner_relative_distancematrix(i,:)) - alpha) ./ (c-1);
+    cf = alpha ./ beta;
+    lsof_vector(i) = cf;
+end
+end
